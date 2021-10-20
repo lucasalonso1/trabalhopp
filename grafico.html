@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<!--
+	Forty by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Trabalho PP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="main.css" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+		<noscript><link rel="stylesheet" href="noscript.css" /></noscript>
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		<script src="https://code.highcharts.com/modules/series-label.js"></script>
+		<script src="https://code.highcharts.com/modules/exporting.js"></script>
+		<script src="https://code.highcharts.com/modules/export-data.js"></script>
+		<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo"><strong>Trabalho PP</strong> <span>LUCAS & LUIZ</span></a>
+						<nav>
+							<a href="#menu">Menu</a>
+						</nav>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<ul class="links">
+							<li><a href="/">AO VIVO</a></li>
+							<li><a href="/grafico.html">GRÁFICO</a></li>
+							<li><a href="/historico.html">HISTÓRICO</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main" class="alt">
+
+						<!-- One -->
+							<section id="one">
+								<div class="inner">
+										<header class="major">
+											<h1>Gráficos</h1>
+										</header>
+										<section class="split">
+											<div class="highcharts-figure" id="chart-temperatura">
+											</div>
+										</section>
+										<br/>
+										<section>
+											<div class="highcharts-figure" id="chart-velocidade">
+												
+											</div>
+										</section>
+								</div>
+							</section>
+
+					</div>
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<ul class="copyright">
+								<li>&copy; LUCAS & LUIZ</li><li>TRABALHO PP: <a>IFSP CATANDUVA</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="jquery.min.js"></script>
+			<script src="jquery.scrolly.min.js"></script>
+			<script src="jquery.scrollex.min.js"></script>
+			<script src="browser.min.js"></script>
+			<script src="breakpoints.min.js"></script>
+			<script src="util.js"></script>
+			<script src="main.js"></script>
+
+	</body>
+</html>
+<script type="module">
+///////////////////////////////conexão////////////////////////
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+   import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-analytics.js";
+   import { getDatabase, ref, onValue} from "https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCmlAYkMlYn1yxiZgO8eaiwA-FG1KlYLPs",
+        authDomain: "trabalhopp-7e58e.firebaseapp.com",
+        databaseURL: "https://trabalhopp-7e58e-default-rtdb.firebaseio.com",
+        projectId: "trabalhopp-7e58e",
+        storageBucket: "trabalhopp-7e58e.appspot.com",
+        messagingSenderId: "252088541616",
+        appId: "1:252088541616:web:3ee1ed3616925aef1bf675",
+        measurementId: "G-S00FPW9BS1"
+    };
+   const app = initializeApp(firebaseConfig);
+   const analytics = getAnalytics(app);
+   const db = getDatabase();
+ ////////////////////////////grafico////////////////////////////////////////////////
+
+	var chartT = new Highcharts.Chart({
+	 chart:{ renderTo : 'chart-temperatura' },
+	 title: { text: 'Temperatura' },
+	 series: [{
+	   showInLegend: false,
+	   data: []
+	 }],
+	 plotOptions: {
+	   line: { animation: false,
+		 dataLabels: { enabled: true }
+	   },
+	   series: { color: '#059e8a' }
+	 },
+	 xAxis: { type: 'datetime',
+	   dateTimeLabelFormats: { second: '%H:%M:%S' }
+	 },
+	 yAxis: {
+	   title: { text: 'Temperatura (Celsius)' }
+	 },
+	 credits: { enabled: false },
+	 responsive: {
+	   rules: [{
+		 condition: {
+		   minHeight: 200,
+		   minWidth: 200
+		 },
+		 chartOptions: {
+		   legend: {
+			 layout: 'horizontal',
+			 align: 'center',
+			 verticalAlign: 'bottom'
+		   }
+		 }
+	   }]
+	 }
+   });
+	const tempTemperatura = ref(db, 'live/temperatura');
+	onValue(tempTemperatura, (snapshot) => {
+			const dataT = snapshot.val();
+			var x = (new Date()).getTime(),
+			 y = parseFloat(dataT);
+			if(chartT.series[0].data.length > 40) {
+		   		chartT.series[0].addPoint([x, y], true, true, true);
+		 	} else {
+		   chartT.series[0].addPoint([x, y], true, false, true);
+		 	}
+		});
+   
+   var chartH = new Highcharts.Chart({
+	 chart:{ renderTo:'chart-velocidade' },
+	 title: { text: 'Velocidade' },
+	 series: [{
+	   showInLegend: false,
+	   data: []
+	 }],
+	 plotOptions: {
+	   line: { animation: false,
+		 dataLabels: { enabled: true }
+	   }
+	 },
+	 xAxis: {
+	   type: 'datetime',
+	   dateTimeLabelFormats: { second: '%H:%M:%S' }
+	 },
+	 yAxis: {
+	   title: { text: 'Velocidade (%)' }
+	 },
+	 credits: { enabled: false },
+	 responsive: {
+	   rules: [{
+		 condition: {
+		   minHeight: 200,
+		   minWidth: 200
+		 },
+		 chartOptions: {
+		   legend: {
+			 layout: 'horizontal',
+			 align: 'center',
+			 verticalAlign: 'bottom'
+		   }
+		 }
+	   }]
+	 }
+   
+   });
+   	const tempVelocidade = ref(db, 'live/velocidade');
+	onValue(tempVelocidade, (snapshot) => {
+				const dataV = snapshot.val();
+				var x = (new Date()).getTime(),
+			 	y = parseFloat(dataV);
+			if(chartH.series[0].data.length > 40) {
+		   		chartH.series[0].addPoint([x, y], true, true, true);
+		 	} else {
+		   		chartH.series[0].addPoint([x, y], true, false, true);
+		 	}
+		});
+</script>
